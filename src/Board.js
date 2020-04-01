@@ -40,16 +40,13 @@ class Board extends Component {
     super(props);
 
     this.state = {
-      hasWon: false,
-      board: this.createBoard()
+      board: this.createBoard(),
+      hasWon: false
     }
   }
 
-  /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
-
   createBoard() {
     let board = [];
-    // TODO: create array-of-arrays of true/false values
     for(let y = 0; y < this.props.nRows; y++) {
       let row = [];
       for(let x = 0; x < this.props.nCols; x++) {
@@ -60,35 +57,32 @@ class Board extends Component {
     return board;
   }
 
-  /** handle changing a cell: update board & determine if winner */
-
   flipCellsAround(coord) {
-    console.log(coord);
-    let {ncols, nrows} = this.props;
+    let {nCols, nRows} = this.props;
     let board = this.state.board;
     let [y, x] = coord.split("-").map(Number);
 
-
     function flipCell(y, x) {
-      // if this coord is actually on board, flip it
-
-      if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
+      if (x >= 0 && x < nCols && y >= 0 && y < nRows) {
         board[y][x] = !board[y][x];
       }
     }
 
-    // TODO: flip this cell and the cells around it
+    flipCell(y, x);
+    flipCell(y, x - 1);
+    flipCell(y, x + 1);
+    flipCell(y - 1, x);
+    flipCell(y + 1, x);
 
-    // win when every cell is turned off
-    // TODO: determine is the game has been won
+    let hasWon = board.every(row => row.every(cell => !cell));
 
-    // this.setState({board, hasWon});
+    this.setState({ board: board, hasWon: hasWon })
   }
 
-
-  /** Render game board or winning message. */
-
   render() {
+    if(this.state.hasWon) {
+      return <h1>YOU WON!</h1>
+    }
     let tableBoard = [];
     for(let y = 0; y < this.props.nRows; y++) {
       let row = [];
@@ -101,9 +95,6 @@ class Board extends Component {
     return(
       // if the game is won, just show a winning msg & render nothing else
   
-      // TODO
-  
-      // make table board
       <table className="Board">
         <tbody>
           {tableBoard}
